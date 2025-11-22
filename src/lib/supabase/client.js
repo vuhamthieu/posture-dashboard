@@ -7,8 +7,3 @@ export function createClient() {
   )
 }
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase env variables! Check .env.local')
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
