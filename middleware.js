@@ -1,12 +1,12 @@
-// middleware.js 
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 
 export async function middleware(request) {
-  const requestHeaders = new Headers(request.headers)
-  const response = NextResponse.next({
+  const { pathname } = request.nextUrl
+
+  let response = NextResponse.next({
     request: {
-      headers: requestHeaders,
+      headers: request.headers,
     },
   })
 
@@ -19,33 +19,81 @@ export async function middleware(request) {
           return request.cookies.get(name)?.value
         },
         set(name, value, options) {
-          requestHeaders.set('set-cookie', `${name}=${value}; Path=/; ${options ? Object.entries(options).map(([k, v]) => `${k}=${v}`).join('; ') : ''}`)
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
         },
         remove(name, options) {
-          requestHeaders.set('set-cookie', `${name}=deleted; Path=/; Max-Age=0`)
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
         },
       },
     }
   )
 
-  await supabase.auth.getSession()
-
   const { data: { session } } = await supabase.auth.getSession()
-  const pathname = request.nextUrl.pathname
 
-  // Protect (app) routes
-  if (pathname.startsWith('/(app)') && !session) {
-    return NextResponse.redirect(new URL('/(auth)/login', request.url))
+  const authRoutes = ['/login', '/signup']
+  const protectedRoutes = ['/', '/devices', '/history', '/settings', '/analytics']
+  const publicRoutes = ['/about', '/contact'] 
+  const isProtectedRoute = protectedRoutes.some(route => 
+    pathname === route || pathname.startsWith(`${route}/`)
+  )
+  
+  if (isProtectedRoute && !session) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('redirectTo', pathname) 
+    return NextResponse.redirect(loginUrl)
   }
 
-  // Redirect logged-in users from auth pages
-  if (pathname.startsWith('/(auth)') && session) {
-    return NextResponse.redirect(new URL('/(app)', request.url))
+  const isAuthRoute = authRoutes.some(route => pathname === route)
+  
+  if (isAuthRoute && session) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  const isPublicRoute = publicRoutes.some(route => pathname === route)
+  if (isPublicRoute) {
+    return response
   }
 
   return response
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths EXCEPT:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder files (*.png, *.jpg, *.svg, etc.)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }
