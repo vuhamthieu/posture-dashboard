@@ -1,13 +1,11 @@
-import { createClient } from '@/lib/supabase/route'
+import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
 export async function POST(request) {
   try {
-    // Parse request body
     const body = await request.json()
     const { posture_type, confidence, user_email } = body
 
-    // Validate required fields
     if (!posture_type || confidence === undefined) {
       return NextResponse.json(
         { error: 'Missing required fields: posture_type, confidence' },
@@ -22,11 +20,20 @@ export async function POST(request) {
       )
     }
 
-    // Create Supabase client
-    const supabase = await createClient()
-    
-    // Find user by email
-    const { data: { users }, error: userError } = await supabase.auth.admin.listUsers()
+    // Create admin client with SERVICE_ROLE_KEY
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
+
+    // Find user by email using admin client
+    const { data: { users }, error: userError } = await supabaseAdmin.auth.admin.listUsers()
     
     if (userError) {
       console.error('Auth error:', userError)
@@ -46,7 +53,7 @@ export async function POST(request) {
     }
 
     // Insert posture record
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('posture_records')
       .insert({
         user_id: user.id,
@@ -65,7 +72,6 @@ export async function POST(request) {
       )
     }
 
-    // Success response
     return NextResponse.json({
       success: true,
       message: 'Posture record saved',
@@ -86,16 +92,11 @@ export async function POST(request) {
   }
 }
 
-// Health check endpoint
 export async function GET() {
   return NextResponse.json({
     status: 'online',
     message: 'Posture API is running',
     version: '1.0.0',
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      POST: 'Send posture data',
-      GET: 'Health check'
-    }
+    timestamp: new Date().toISOString()
   })
 }

@@ -2,7 +2,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Clock, Save, AlertCircle, CheckCircle, User, Trash2, Info } from 'lucide-react'
+import { Clock, Save, AlertCircle, CheckCircle, User, Trash2 } from 'lucide-react'
 
 export default function SettingsPage() {
   const [user, setUser] = useState(null)
@@ -114,52 +114,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Raspberry Pi Connection Info */}
-      <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-        <div className="flex items-center gap-3 mb-4">
-          <Info className="w-5 h-5 text-blue-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Raspberry Pi Setup</h2>
-        </div>
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Your Email (use this on Pi)
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={user?.email || ''}
-                readOnly
-                className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg font-mono text-sm"
-              />
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(user?.email || '')
-                  setMessage({ type: 'success', text: 'Email copied!' })
-                  setTimeout(() => setMessage({ type: '', text: '' }), 2000)
-                }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-          
-          <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto">
-            <p className="text-gray-400 mb-2"># In your Pi Python code, set:</p>
-            <code className="block">
-              USER_EMAIL = "{user?.email}"<br/>
-              WEB_API_URL = "http://your-laptop-ip:3000/api/posture"
-            </code>
-          </div>
-
-          <p className="text-sm text-gray-600">
-            ℹ️ Make sure your Raspberry Pi and laptop are on the same WiFi network. 
-            Replace <code className="bg-gray-200 px-1 rounded">your-laptop-ip</code> with your laptop's IP address.
-          </p>
-        </div>
-      </div>
-
       {/* Alert Settings */}
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex items-center gap-3 mb-6">
@@ -170,27 +124,27 @@ export default function SettingsPage() {
         <div>
           <label className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-gray-900">
-              Bad Posture Alert Delay
+              Bad Posture Threshold
             </span>
             <span className="text-sm text-gray-600">
-              {threshold} {threshold === 1 ? 'second' : 'seconds'}
+              {threshold} {threshold === 1 ? 'minute' : 'minutes'}
             </span>
           </label>
           <input
             type="range"
-            min="3"
-            max="30"
+            min="1"
+            max="15"
             step="1"
             value={threshold}
             onChange={(e) => setThreshold(parseInt(e.target.value))}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
           <div className="flex justify-between text-xs text-gray-500 mt-2">
-            <span>3 sec</span>
-            <span>30 sec</span>
+            <span>1 min</span>
+            <span>15 min</span>
           </div>
           <p className="text-sm text-gray-600 mt-3">
-            Voice alert will trigger after detecting bad posture continuously for this duration
+            Alert after detecting bad posture for this duration
           </p>
         </div>
       </div>
@@ -203,19 +157,11 @@ export default function SettingsPage() {
         </div>
         <button
           onClick={async () => {
-            if (confirm('⚠️ Are you sure? This will permanently delete all your posture history.\n\nThis action cannot be undone!')) {
+            if (confirm('⚠️ Are you sure? This will permanently delete all your posture history. This action cannot be undone.')) {
               const { data: { user } } = await supabase.auth.getUser()
-              const { error } = await supabase
-                .from('posture_records')
-                .delete()
-                .eq('user_id', user.id)
-              
-              if (error) {
-                setMessage({ type: 'error', text: 'Failed to delete records' })
-              } else {
-                setMessage({ type: 'success', text: 'All posture history deleted' })
-                setTimeout(() => window.location.reload(), 1500)
-              }
+              await supabase.from('posture_records').delete().eq('user_id', user.id)
+              setMessage({ type: 'success', text: 'All posture history deleted' })
+              setTimeout(() => window.location.reload(), 1500)
             }
           }}
           className="w-full px-4 py-3 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 transition flex items-center justify-center gap-2"
