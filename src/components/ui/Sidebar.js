@@ -14,6 +14,7 @@ const navItems = [
   { href: '/history', label: 'History', icon: History },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/update', label: 'Update', icon: '🔄' },
 ]
 
 export default function Sidebar({ user }) {
@@ -52,7 +53,7 @@ export default function Sidebar({ user }) {
                 }
               `}
             >
-              <Icon className="w-5 h-5" />
+              <icon className="w-5 h-5" />
               <span>{item.label}</span>
             </Link>
           )
