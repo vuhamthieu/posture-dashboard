@@ -6,7 +6,9 @@ import {
   History, 
   BarChart3, 
   Settings,
-  Camera
+  Camera,
+  Download,
+  Pi
 } from 'lucide-react'
 
 const navItems = [
@@ -14,7 +16,7 @@ const navItems = [
   { href: '/history', label: 'History', icon: History },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/settings', label: 'Settings', icon: Settings },
-  { href: '/update', label: 'Update', icon: '🔄' },
+  { href: '/update', label: 'Update', icon: Download },
 ]
 
 export default function Sidebar({ user }) {
@@ -26,10 +28,10 @@ export default function Sidebar({ user }) {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Camera className="w-6 h-6 text-white" />
+            <Pi className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg">Posture</h1>
+            <h1 className="font-bold text-lg text-black">Posture</h1>
             <p className="text-xs text-gray-500">Monitor</p>
           </div>
         </div>

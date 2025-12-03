@@ -114,41 +114,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Alert Settings */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <div className="flex items-center gap-3 mb-6">
-          <Clock className="w-5 h-5 text-gray-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Alert Settings</h2>
-        </div>
-
-        <div>
-          <label className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-gray-900">
-              Bad Posture Threshold
-            </span>
-            <span className="text-sm text-gray-600">
-              {threshold} {threshold === 1 ? 'minute' : 'minutes'}
-            </span>
-          </label>
-          <input
-            type="range"
-            min="1"
-            max="15"
-            step="1"
-            value={threshold}
-            onChange={(e) => setThreshold(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-          />
-          <div className="flex justify-between text-xs text-gray-500 mt-2">
-            <span>1 min</span>
-            <span>15 min</span>
-          </div>
-          <p className="text-sm text-gray-600 mt-3">
-            Alert after detecting bad posture for this duration
-          </p>
-        </div>
-      </div>
-
       {/* Danger Zone */}
       <div className="bg-red-50 rounded-xl p-6 border border-red-200">
         <div className="flex items-center gap-3 mb-4">
