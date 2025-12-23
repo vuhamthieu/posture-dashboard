@@ -33,7 +33,7 @@ export default function Dashboard() {
         .limit(100)
 
       if (data && data.length > 0) {
-        setHistory(data.reverse()) // Reverse để chart đúng thứ tự
+        setHistory(data.reverse()) 
         setLatest(data[data.length - 1])
         
         // Calculate stats
@@ -101,7 +101,6 @@ export default function Dashboard() {
       minute: '2-digit',
       hour12: false 
     }),
-    // Convert posture to numeric score for chart (good=100, bad=0)
     score: record.posture_type === 'good' ? 100 : 0,
     type: record.posture_type
   }))

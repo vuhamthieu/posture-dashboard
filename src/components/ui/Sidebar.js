@@ -31,8 +31,7 @@ export default function Sidebar({ user }) {
             <Pi className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-black">Posture</h1>
-            <p className="text-xs text-gray-500">Monitor</p>
+            <h1 className="font-bold text-lg text-black">PosturePal</h1>
           </div>
         </div>
       </div>
