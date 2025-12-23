@@ -7,12 +7,14 @@ import {
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts'
 import { TrendingUp, TrendingDown, Calendar, Clock, Activity } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function AnalyticsPage() {
     const [records, setRecords] = useState([])
     const [timeRange, setTimeRange] = useState('week') // week, month, all
     const [loading, setLoading] = useState(true)
     const supabase = createClient()
+    const { t } = useLanguage();
 
     useEffect(() => {
         loadData()
@@ -111,8 +113,8 @@ export default function AnalyticsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-                    <p className="text-gray-600 mt-1">Detailed insights into your posture habits</p>
+                    <h1 className="text-3xl font-bold text-gray-900">{t.analytics || 'Analytics'}</h1>
+                    <p className="text-gray-600 mt-1">{t.realtime_tracking || 'Detailed insights into your posture habits'}</p>
                 </div>
 
                 {/* Time Range Selector */}
@@ -124,7 +126,7 @@ export default function AnalyticsPage() {
                                 : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                             }`}
                     >
-                        Last 7 Days
+                        {t.last_100 || 'Last 7 Days'}
                     </button>
                     <button
                         onClick={() => setTimeRange('month')}
@@ -133,7 +135,7 @@ export default function AnalyticsPage() {
                                 : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                             }`}
                     >
-                        Last Month
+                        {t.last_100 || 'Last Month'}
                     </button>
                     <button
                         onClick={() => setTimeRange('all')}
@@ -142,7 +144,7 @@ export default function AnalyticsPage() {
                                 : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                             }`}
                     >
-                        All Time
+                        {t.total_records || 'All Time'}
                     </button>
                 </div>
             </div>
@@ -151,7 +153,7 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm opacity-90">Good Posture</span>
+                        <span className="text-sm opacity-90">{t.good_posture || 'Good Posture'}</span>
                         <TrendingUp className="w-5 h-5" />
                     </div>
                     <p className="text-3xl font-bold">{stats.goodPercentage}%</p>
@@ -160,7 +162,7 @@ export default function AnalyticsPage() {
 
                 <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm opacity-90">Bad Posture</span>
+                        <span className="text-sm opacity-90">{t.status_bad || 'Bad Posture'}</span>
                         <TrendingDown className="w-5 h-5" />
                     </div>
                     <p className="text-3xl font-bold">{(100 - stats.goodPercentage).toFixed(1)}%</p>
@@ -169,7 +171,7 @@ export default function AnalyticsPage() {
 
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm opacity-90">Avg Confidence</span>
+                        <span className="text-sm opacity-90">{t.confidence || 'Avg Confidence'}</span>
                         <Activity className="w-5 h-5" />
                     </div>
                     <p className="text-3xl font-bold">{stats.avgConfidence}%</p>
@@ -178,7 +180,7 @@ export default function AnalyticsPage() {
 
                 <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm opacity-90">Total Records</span>
+                        <span className="text-sm opacity-90">{t.total_records || 'Total Records'}</span>
                         <Calendar className="w-5 h-5" />
                     </div>
                     <p className="text-3xl font-bold">{stats.total}</p>
@@ -190,7 +192,7 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Daily Trend */}
                 <div className="bg-white rounded-xl p-6 border border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Trend</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.daily_trend || 'Daily Trend'}</h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={dailyData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -213,7 +215,7 @@ export default function AnalyticsPage() {
 
                 {/* Posture Distribution */}
                 <div className="bg-white rounded-xl p-6 border border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Posture Distribution</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.posture_distribution || 'Posture Distribution'}</h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
                             <Pie
@@ -237,7 +239,7 @@ export default function AnalyticsPage() {
 
                 {/* Hourly Activity */}
                 <div className="bg-white rounded-xl p-6 border border-gray-200 lg:col-span-2">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Hourly Activity Pattern</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.hourly_activity || 'Hourly Activity Pattern'}</h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={hourlyData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -261,7 +263,7 @@ export default function AnalyticsPage() {
 
             {/* Posture Type Breakdown */}
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Posture Type Breakdown</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.posture_type_breakdown || 'Posture Type Breakdown'}</h3>
                 <div className="space-y-4">
                     {typeData.map((type) => (
                         <div key={type.name}>

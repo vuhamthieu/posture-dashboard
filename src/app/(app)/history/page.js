@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Calendar, Clock, AlertCircle, CheckCircle, Filter, Search } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function HistoryPage() {
   const [records, setRecords] = useState([])
@@ -11,6 +12,7 @@ export default function HistoryPage() {
   const [filter, setFilter] = useState('all') // all, good, bad
   const [searchDate, setSearchDate] = useState('')
   const supabase = createClient()
+  const { t } = useLanguage();
 
   useEffect(() => {
     loadHistory()
@@ -63,7 +65,7 @@ export default function HistoryPage() {
     switch(type) {
       case 'good':
         return { 
-          label: 'Good Posture', 
+          label: t.status_good || 'Good Posture', 
           color: 'text-green-600', 
           bg: 'bg-green-50',
           border: 'border-green-200',
@@ -71,7 +73,7 @@ export default function HistoryPage() {
         }
       case 'slouching':
         return { 
-          label: 'Slouching', 
+          label: t.status_hunch || 'Slouching', 
           color: 'text-yellow-600', 
           bg: 'bg-yellow-50',
           border: 'border-yellow-200',
@@ -79,7 +81,7 @@ export default function HistoryPage() {
         }
       case 'forward_head':
         return { 
-          label: 'Forward Head', 
+          label: t.status_lean || 'Forward Head', 
           color: 'text-orange-600', 
           bg: 'bg-orange-50',
           border: 'border-orange-200',
@@ -87,7 +89,7 @@ export default function HistoryPage() {
         }
       case 'leaning':
         return { 
-          label: 'Leaning', 
+          label: t.status_titl || 'Leaning', 
           color: 'text-red-600', 
           bg: 'bg-red-50',
           border: 'border-red-200',
@@ -95,7 +97,7 @@ export default function HistoryPage() {
         }
       default:
         return { 
-          label: 'Unknown', 
+          label: t.status_unknown || 'Unknown', 
           color: 'text-gray-600', 
           bg: 'bg-gray-50',
           border: 'border-gray-200',
@@ -138,8 +140,8 @@ export default function HistoryPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Posture History</h1>
-        <p className="text-gray-600 mt-1">Review your past posture detections</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t.history}</h1>
+        <p className="text-gray-600 mt-1">{t.nav_desc || 'Review your past posture detections'}</p>
       </div>
 
       {/* Stats Summary */}
@@ -277,8 +279,8 @@ export default function HistoryPage() {
           ) : filteredRecords.length === 0 ? (
             <div className="p-12 text-center text-gray-500">
               <Calendar className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>No records found</p>
-              <p className="text-sm mt-1">Try adjusting your filters</p>
+              <p>{t.no_data || 'No records found'}</p>
+              <p className="text-sm mt-1">{t.loading || 'Try adjusting your filters'}</p>
             </div>
           ) : (
             Object.entries(groupedRecords).map(([date, dateRecords]) => (

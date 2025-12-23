@@ -3,7 +3,10 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
+import logo from '@/assets/logowithtext.png'
 import { Camera, Mail, Lock, AlertCircle } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -40,10 +43,16 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
-            <Camera className="w-8 h-8 text-white" />
+          <div className="flex justify-center mb-4">
+            <Image 
+              src={logo} 
+              alt="PosturePal Logo" 
+              width={300} 
+              height={80}
+              priority 
+              className="rounded-lg"
+            />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Posture Monitor</h1>
           <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
 

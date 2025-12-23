@@ -1,4 +1,5 @@
 import OTAPanel from '@/components/ui/OTAPanel'
+import { useLanguage } from '@/context/LanguageContext';
 
 export const metadata = {
   title: 'Firmware Update | Smart Posture Assistant',

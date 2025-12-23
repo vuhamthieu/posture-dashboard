@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Camera, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
