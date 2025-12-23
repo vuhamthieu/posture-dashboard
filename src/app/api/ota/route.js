@@ -1,79 +1,50 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
-const PI_IP = process.env.PI_TAILSCALE_IP || '100.122.235.16'
-const PI_PORT = process.env.PI_API_PORT || '8080'
-const UPDATE_SECRET = process.env.UPDATE_SECRET || 'posture_secret_2024'
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY 
+)
 
 export async function GET() {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
-    
-    const response = await fetch(`http://${PI_IP}:${PI_PORT}/health`, {
-      signal: controller.signal
-    })
-    
-    clearTimeout(timeoutId)
-    
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: 'Pi returned error', status: response.status },
-        { status: response.status }
-      )
-    }
-    
-    const data = await response.json()
-    return NextResponse.json(data)
-    
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      return NextResponse.json(
-        { error: 'Pi connection timeout', offline: true },
-        { status: 504 }
-      )
-    }
-    
-    return NextResponse.json(
-      { error: 'Cannot reach Pi', details: error.message, offline: true },
-      { status: 503 }
-    )
-  }
+  return NextResponse.json({ 
+    status: 'online (via db)', 
+    mode: 'broker',
+    device_id: 'pi-posture-001' 
+  })
 }
 
-export async function POST() {
+export async function POST(req) {
   try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000) 
+    const { action } = await req.json() 
+    const commandType = action === 'update' ? 'UPDATE' : 'RESTART'
     
-    const response = await fetch(`http://${PI_IP}:${PI_PORT}/update`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${UPDATE_SECRET}`,
-        'Content-Type': 'application/json'
-      },
-      signal: controller.signal
+    console.log(`[OTA] Queuing command: ${commandType} for pi-posture-001`)
+
+    const { data, error } = await supabase
+      .from('device_commands')
+      .insert([
+        { 
+          device_id: 'pi-posture-001', 
+          command: commandType,
+          status: 'PENDING'
+        }
+      ])
+      .select()
+
+    if (error) {
+      console.error('Supabase Error:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: `Command ${commandType} queued successfully. Pi will execute shortly.` 
     })
-    
-    clearTimeout(timeoutId)
-    
-    const data = await response.json()
-    
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status })
-    }
-    
-    return NextResponse.json(data)
-    
+
   } catch (error) {
-    if (error.name === 'AbortError') {
-      return NextResponse.json(
-        { error: 'Update timeout (>30s)', hint: 'Update may still be in progress' },
-        { status: 504 }
-      )
-    }
-    
     return NextResponse.json(
-      { error: 'Update request failed', details: error.message },
+      { error: 'Internal Server Error', details: error.message },
       { status: 500 }
     )
   }

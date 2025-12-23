@@ -1,35 +1,56 @@
-// src/app/(app)/settings/page.js
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Clock, Save, AlertCircle, CheckCircle, User, Trash2 } from 'lucide-react'
+import { Save, AlertCircle, CheckCircle, User, Trash2, Monitor, Smile, Volume2, Lightbulb } from 'lucide-react'
+
+const DEVICE_ID = 'pi-posture-001'
 
 export default function SettingsPage() {
   const [user, setUser] = useState(null)
-  const [threshold, setThreshold] = useState(5)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
+  
+  const [config, setConfig] = useState({
+    neck_threshold: 35,
+    alert_language: 'vi',
+    oled_icon_style: 'A',
+    led_color_good: '#00FF00',
+    led_color_bad: '#FF0000'
+  })
+
   const supabase = createClient()
 
   useEffect(() => {
-    loadSettings()
+    loadData()
   }, [])
 
-  const loadSettings = async () => {
+  const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')
+  const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+    return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0]
+  }
+
+  const loadData = async () => {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    setUser(user)
+    if (user) setUser(user)
 
     const { data } = await supabase
-      .from('alert_settings')
-      .select('*')
-      .eq('user_id', user.id)
+      .from('device_configs')
+      .select('settings')
+      .eq('device_id', DEVICE_ID)
       .single()
 
-    if (data) {
-      setThreshold(data.bad_posture_threshold || 5)
+    if (data?.settings) {
+      const s = data.settings
+      setConfig({
+        neck_threshold: s.neck_threshold || 35,
+        alert_language: s.alert_language || 'vi',
+        oled_icon_style: s.oled_icon_style || 'A',
+        led_color_good: s.led_color_good ? rgbToHex(...s.led_color_good) : '#00FF00',
+        led_color_bad: s.led_color_bad ? rgbToHex(...s.led_color_bad) : '#FF0000',
+      })
     }
     setLoading(false)
   }
@@ -38,18 +59,32 @@ export default function SettingsPage() {
     setSaving(true)
     setMessage({ type: '', text: '' })
 
+    const newSettings = {
+      neck_threshold: parseFloat(config.neck_threshold),
+      nose_drop_threshold: 0.15,
+      ml_confidence_threshold: 0.75,
+      smoothing_frames: 6,
+      status_buffer_size: 8,
+      alert_language: config.alert_language,
+      oled_icon_style: config.oled_icon_style,
+      led_color_good: hexToRgb(config.led_color_good),
+      led_color_bad: hexToRgb(config.led_color_bad),
+      alert_messages_vi: ["Bạn đang cúi đầu, giữ đầu thẳng nhé", "Đừng gù lưng, hãy ngồi thẳng lên nhé", "Đừng nghiêng đầu", "Ngồi xa ra", "Tư thế chưa chuẩn"],
+      alert_messages_en: ["Sit up straight", "Don't slouch", "Don't tilt head", "Sit further away", "Bad posture"]
+    }
+
     const { error } = await supabase
-      .from('alert_settings')
+      .from('device_configs')
       .upsert({
-        user_id: user.id,
-        bad_posture_threshold: threshold,
+        device_id: DEVICE_ID,
+        settings: newSettings,
         updated_at: new Date().toISOString()
       })
 
     if (error) {
-      setMessage({ type: 'error', text: 'Failed to save settings' })
+      setMessage({ type: 'error', text: 'Error: ' + error.message })
     } else {
-      setMessage({ type: 'success', text: 'Settings saved successfully!' })
+      setMessage({ type: 'success', text: 'Configuration saved to Pi!' })
       setTimeout(() => setMessage({ type: '', text: '' }), 3000)
     }
     setSaving(false)
@@ -57,100 +92,164 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="w-8 h-8 mx-auto mb-2 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-gray-600">Loading settings...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
-      {/* Header */}
-      <div>
+    <div className="max-w-3xl mx-auto w-full space-y-8 pb-10">
+      <div className="text-center md:text-left">
         <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-1">Manage your account and preferences</p>
+        <p className="text-gray-600 mt-1">Device Configuration & Account</p>
       </div>
 
-      {/* Success/Error Message */}
       {message.text && (
-        <div className={`flex items-center gap-3 p-4 rounded-lg ${
+        <div className={`flex items-center gap-3 p-4 rounded-lg animate-fade-in ${
           message.type === 'success' 
             ? 'bg-green-50 border border-green-200 text-green-700' 
             : 'bg-red-50 border border-red-200 text-red-700'
         }`}>
-          {message.type === 'success' ? (
-            <CheckCircle className="w-5 h-5 flex-shrink-0" />
-          ) : (
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-          )}
+          {message.type === 'success' ? <CheckCircle className="w-5 h-5"/> : <AlertCircle className="w-5 h-5"/>}
           <span className="font-medium">{message.text}</span>
         </div>
       )}
 
-      {/* Account Info */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <div className="flex items-center gap-3 mb-4">
-          <User className="w-5 h-5 text-gray-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Account</h2>
-        </div>
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Email</label>
-            <p className="text-gray-900 font-medium">{user?.email}</p>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-6 border-b border-gray-100 bg-gray-50/50">
+          <div className="flex items-center gap-2 text-blue-700">
+            <Monitor className="w-5 h-5" />
+            <h2 className="text-lg font-bold">Posture Bot Configuration</h2>
           </div>
+        </div>
+        
+        <div className="p-6 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <Smile className="w-4 h-4"/> OLED Face Style
+              </label>
+              <select 
+                value={config.oled_icon_style}
+                onChange={(e) => setConfig({...config, oled_icon_style: e.target.value})}
+                className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 "
+              >
+                <option value="A">Style A: Human</option>
+                <option value="B">Style B: Cute Cat</option>
+                <option value="C">Style C: Minimalist</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <Volume2 className="w-4 h-4"/> Voice Language
+              </label>
+              <select 
+                value={config.alert_language}
+                onChange={(e) => setConfig({...config, alert_language: e.target.value})}
+                className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 "
+              >
+                <option value="vi">Vietnamese</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Member Since</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+              <Lightbulb className="w-4 h-4"/> LED Colors
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 border rounded-lg bg-gray-50">
+                <span className="text-xs text-gray-500 block mb-2">Good Posture</span>
+                <div className="flex items-center gap-3">
+                  <input 
+                    type="color" 
+                    value={config.led_color_good}
+                    onChange={(e) => setConfig({...config, led_color_good: e.target.value})}
+                    className="h-9 w-16 cursor-pointer rounded border p-0.5 bg-white"
+                  />
+                  <code className="text-sm">{config.led_color_good}</code>
+                </div>
+              </div>
+              <div className="p-3 border rounded-lg bg-gray-50">
+                <span className="text-xs text-gray-500 block mb-2">Bad Posture</span>
+                <div className="flex items-center gap-3">
+                  <input 
+                    type="color" 
+                    value={config.led_color_bad}
+                    onChange={(e) => setConfig({...config, led_color_bad: e.target.value})}
+                    className="h-9 w-16 cursor-pointer rounded border p-0.5 bg-white"
+                  />
+                  <code className="text-sm">{config.led_color_bad}</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+          <button
+            onClick={loadData}
+            className="px-4 py-2 text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium transition shadow-sm flex items-center gap-2 disabled:opacity-70"
+          >
+            {saving ? (
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            {saving ? 'Saving...' : 'Save'}
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <div className="flex items-center gap-3 mb-4 text-gray-700">
+          <User className="w-5 h-5" />
+          <h2 className="text-lg font-semibold">Account</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-3 bg-gray-50 rounded-lg">
+            <label className="block text-xs text-gray-500 mb-1">Email</label>
+            <p className="text-gray-900 font-medium truncate">{user?.email}</p>
+          </div>
+          <div className="p-3 bg-gray-50 rounded-lg">
+            <label className="block text-xs text-gray-500 mb-1">Joined</label>
             <p className="text-gray-900 font-medium">
-              {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              }) : 'N/A'}
+              {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Danger Zone */}
       <div className="bg-red-50 rounded-xl p-6 border border-red-200">
-        <div className="flex items-center gap-3 mb-4">
-          <AlertCircle className="w-5 h-5 text-red-600" />
-          <h2 className="text-lg font-semibold text-red-900">Danger Zone</h2>
+        <div className="flex items-center gap-3 mb-4 text-red-700">
+          <AlertCircle className="w-5 h-5" />
+          <h2 className="text-lg font-semibold">Danger Zone</h2>
         </div>
+        <p className="text-sm text-red-600 mb-4">
+          Permanently delete all posture history data. This cannot be undone.
+        </p>
         <button
           onClick={async () => {
-            if (confirm('⚠️ Are you sure? This will permanently delete all your posture history. This action cannot be undone.')) {
-              const { data: { user } } = await supabase.auth.getUser()
+            if (confirm('⚠️ Are you sure you want to delete all history?')) {
               await supabase.from('posture_records').delete().eq('user_id', user.id)
-              setMessage({ type: 'success', text: 'All posture history deleted' })
+              setMessage({ type: 'success', text: 'History deleted.' })
               setTimeout(() => window.location.reload(), 1500)
             }
           }}
-          className="w-full px-4 py-3 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 transition flex items-center justify-center gap-2"
+          className="w-full sm:w-auto px-4 py-2 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-100 transition flex items-center justify-center gap-2"
         >
           <Trash2 className="w-4 h-4" />
-          Clear All Posture History
-        </button>
-      </div>
-
-      {/* Save Button */}
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={loadSettings}
-          className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition"
-        >
-          Reset
-        </button>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-        >
-          <Save className="w-4 h-4" />
-          {saving ? 'Saving...' : 'Save Changes'}
+          Clear History
         </button>
       </div>
     </div>

@@ -51,7 +51,7 @@ export default function AnalyticsPage() {
         total: records.length,
         good: records.filter(r => r.posture_type === 'good').length,
         slouching: records.filter(r => r.posture_type === 'slouching').length,
-        forwardHead: records.filter(r => r.posture_type === 'forward_head').length,
+        tilt: records.filter(r => r.posture_type === 'tilt').length,
         leaning: records.filter(r => r.posture_type === 'leaning').length,
     }
 
