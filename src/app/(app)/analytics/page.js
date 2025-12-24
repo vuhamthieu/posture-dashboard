@@ -53,6 +53,7 @@ export default function AnalyticsPage() {
         total: records.length,
         good: records.filter(r => r.posture_type === 'good').length,
         slouching: records.filter(r => r.posture_type === 'slouching').length,
+        unknown: records.filter(r => r.posture_type === 'unknow').length,
         tilt: records.filter(r => r.posture_type === 'tilt').length,
         leaning: records.filter(r => r.posture_type === 'leaning').length,
     }
@@ -65,10 +66,10 @@ export default function AnalyticsPage() {
 
     // Pie chart data
     const pieData = [
-        { name: 'Good Posture', value: stats.good, color: '#10b981' },
-        { name: 'Slouching', value: stats.slouching, color: '#f59e0b' },
-        { name: 'Forward Head', value: stats.forwardHead, color: '#f97316' },
-        { name: 'Leaning', value: stats.leaning, color: '#ef4444' },
+        { name: t.status_good || 'Good', value: stats.good, color: '#10b981' },
+        { name: t.status_hunch || 'Slouching', value: stats.slouching, color: '#f59e0b' },
+        { name: t.status_lean || 'Leaning', value: stats.leaning, color: '#f97316' },
+        { name: t.status_titl || 'Tilt', value: stats.tilt, color: '#ef4444' },
     ].filter(item => item.value > 0)
 
     // Hourly distribution
@@ -102,10 +103,10 @@ export default function AnalyticsPage() {
 
     // Posture type breakdown
     const typeData = [
-        { name: 'Good', count: stats.good, color: '#10b981' },
-        { name: 'Slouching', count: stats.slouching, color: '#f59e0b' },
-        { name: 'Forward Head', count: stats.forwardHead, color: '#f97316' },
-        { name: 'Leaning', count: stats.leaning, color: '#ef4444' },
+        { name: t.status_good || 'Good', count: stats.good, color: '#10b981' },
+        { name: t.status_hunch || 'Slouching', count: stats.slouching, color: '#f59e0b' },
+        { name: t.status_lean || 'Leaning', count: stats.leaning, color: '#f97316' },
+        { name: t.status_titl || 'Tilt', count: stats.tilt, color: '#ef4444' },
     ]
 
     return (
@@ -126,7 +127,7 @@ export default function AnalyticsPage() {
                                 : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                             }`}
                     >
-                        {t.last_100 || 'Last 7 Days'}
+                        {t.last_7_days || 'Last 7 Days'}
                     </button>
                     <button
                         onClick={() => setTimeRange('month')}
@@ -135,7 +136,7 @@ export default function AnalyticsPage() {
                                 : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                             }`}
                     >
-                        {t.last_100 || 'Last Month'}
+                        {t.last_month || 'Last Month'}
                     </button>
                     <button
                         onClick={() => setTimeRange('all')}
@@ -144,7 +145,7 @@ export default function AnalyticsPage() {
                                 : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                             }`}
                     >
-                        {t.total_records || 'All Time'}
+                        {t.all_time || 'All Time'}
                     </button>
                 </div>
             </div>
@@ -157,7 +158,7 @@ export default function AnalyticsPage() {
                         <TrendingUp className="w-5 h-5" />
                     </div>
                     <p className="text-3xl font-bold">{stats.goodPercentage}%</p>
-                    <p className="text-sm opacity-90 mt-2">{stats.good} of {stats.total} records</p>
+                <p className="text-sm opacity-90 mt-2">{stats.good}/{stats.total} {t.records}</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white">
@@ -166,7 +167,7 @@ export default function AnalyticsPage() {
                         <TrendingDown className="w-5 h-5" />
                     </div>
                     <p className="text-3xl font-bold">{(100 - stats.goodPercentage).toFixed(1)}%</p>
-                    <p className="text-sm opacity-90 mt-2">{stats.bad} warnings</p>
+                    <p className="text-sm opacity-90 mt-2">{stats.bad} {t.alerts || 'warnings'}</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
@@ -175,7 +176,7 @@ export default function AnalyticsPage() {
                         <Activity className="w-5 h-5" />
                     </div>
                     <p className="text-3xl font-bold">{stats.avgConfidence}%</p>
-                    <p className="text-sm opacity-90 mt-2">Detection accuracy</p>
+                    <p className="text-sm opacity-90 mt-2">{t.detection_acc || 'Detection accuracy'}</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white">
@@ -184,7 +185,7 @@ export default function AnalyticsPage() {
                         <Calendar className="w-5 h-5" />
                     </div>
                     <p className="text-3xl font-bold">{stats.total}</p>
-                    <p className="text-sm opacity-90 mt-2">Detections logged</p>
+                    <p className="text-sm opacity-90 mt-2">{t.detection_log || 'Detections logged'}</p>
                 </div>
             </div>
 
@@ -207,15 +208,15 @@ export default function AnalyticsPage() {
                                 }}
                             />
                             <Legend />
-                            <Bar dataKey="good" fill="#10b981" name="Good" radius={[4, 4, 0, 0]} />
-                            <Bar dataKey="bad" fill="#ef4444" name="Bad" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="good" fill="#10b981" name={t.status_good || 'Good'} radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="bad" fill="#ef4444" name={t.status_bad || 'Bad'} radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
 
                 {/* Posture Distribution */}
                 <div className="bg-white rounded-xl p-6 border border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.posture_distribution || 'Posture Distribution'}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.posture_dis || 'Posture Distribution'}</h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
                             <Pie
@@ -239,7 +240,7 @@ export default function AnalyticsPage() {
 
                 {/* Hourly Activity */}
                 <div className="bg-white rounded-xl p-6 border border-gray-200 lg:col-span-2">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.hourly_activity || 'Hourly Activity Pattern'}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.hourly_pattern || 'Hourly Activity Pattern'}</h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={hourlyData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -254,8 +255,8 @@ export default function AnalyticsPage() {
                                 }}
                             />
                             <Legend />
-                            <Line type="monotone" dataKey="good" stroke="#10b981" strokeWidth={2} name="Good" />
-                            <Line type="monotone" dataKey="bad" stroke="#ef4444" strokeWidth={2} name="Bad" />
+                            <Line type="monotone" dataKey="good" stroke="#10b981" strokeWidth={2} name={t.status_good || 'Good'} />
+                            <Line type="monotone" dataKey="bad" stroke="#ef4444" strokeWidth={2} name={t.status_bad || 'Bad'} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
@@ -263,13 +264,13 @@ export default function AnalyticsPage() {
 
             {/* Posture Type Breakdown */}
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.posture_type_breakdown || 'Posture Type Breakdown'}</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t.posture_breakdown || 'Posture Type Breakdown'}</h3>
                 <div className="space-y-4">
                     {typeData.map((type) => (
                         <div key={type.name}>
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium text-gray-700">{type.name}</span>
-                                <span className="text-sm text-gray-600">{type.count} records</span>
+                                <span className="text-sm text-gray-600">{type.count} {t.records}</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                                 <div

@@ -133,7 +133,7 @@ export default function Dashboard() {
             <CheckCircle className="w-5 h-5 text-green-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.good}</p>
-          <p className="text-sm text-green-600 mt-2">{goodPercentage}% of total</p>
+          <p className="text-sm text-green-600 mt-2">{goodPercentage}% {t.of_total}</p>
         </div>
 
         {/* Bad Posture */}
@@ -143,7 +143,7 @@ export default function Dashboard() {
             <AlertCircle className="w-5 h-5 text-red-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.bad}</p>
-          <p className="text-sm text-red-600 mt-2">{stats.total - stats.good} warnings</p>
+          <p className="text-sm text-red-600 mt-2">{stats.total - stats.good} {t.warnings}</p>
         </div>
 
         {/* Total Records */}
@@ -153,7 +153,7 @@ export default function Dashboard() {
             <TrendingUp className="w-5 h-5 text-blue-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-          <p className="text-sm text-gray-600 mt-2">All time</p>
+          <p className="text-sm text-gray-600 mt-2">{t.all_time}</p>
         </div>
       </div>
 

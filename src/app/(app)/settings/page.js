@@ -39,7 +39,6 @@ export default function SettingsPage() {
     const { data } = await supabase
       .from('device_configs')
       .select('settings')
-      .eq('device_id', DEVICE_ID)
       .single()
 
     if (data?.settings) {
@@ -128,41 +127,41 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <Smile className="w-4 h-4"/> OLED Face Style
+                <Smile className="w-4 h-4"/> {t.oled_style}
               </label>
               <select 
                 value={config.oled_icon_style}
                 onChange={(e) => setConfig({...config, oled_icon_style: e.target.value})}
                 className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 "
               >
-                <option value="A">Style A: Human</option>
-                <option value="B">Style B: Cute Cat</option>
-                <option value="C">Style C: Minimalist</option>
+                <option value="A">{t.style_a}</option>
+                <option value="B">{t.style_b}</option>
+                <option value="C">{t.style_c}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <Volume2 className="w-4 h-4"/> Voice Language
+                <Volume2 className="w-4 h-4"/> {t.voice}
               </label>
               <select 
                 value={config.alert_language}
                 onChange={(e) => setConfig({...config, alert_language: e.target.value})}
                 className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 "
               >
-                <option value="vi">Vietnamese</option>
-                <option value="en">English</option>
+                <option value="vi">{t.vietnam}</option>
+                <option value="en">{t.english}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-              <Lightbulb className="w-4 h-4"/> LED Colors
+              <Lightbulb className="w-4 h-4"/> {t.led_color}
             </label>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 border rounded-lg bg-gray-50">
-                <span className="text-xs text-gray-500 block mb-2">Good Posture</span>
+                <span className="text-xs text-gray-500 block mb-2">{t.good_posture}</span>
                 <div className="flex items-center gap-3">
                   <input 
                     type="color" 
@@ -174,7 +173,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="p-3 border rounded-lg bg-gray-50">
-                <span className="text-xs text-gray-500 block mb-2">Bad Posture</span>
+                <span className="text-xs text-gray-500 block mb-2">{t.bad_posture}</span>
                 <div className="flex items-center gap-3">
                   <input 
                     type="color" 
@@ -194,7 +193,7 @@ export default function SettingsPage() {
             onClick={loadData}
             className="px-4 py-2 text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition"
           >
-            {t.loading || 'Cancel'}
+            {t.cancel || 'Cancel'}
           </button>
           <button
             onClick={handleSave}

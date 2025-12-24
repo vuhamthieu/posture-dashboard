@@ -62,46 +62,46 @@ export default function HistoryPage() {
   }
 
   const getPostureInfo = (type) => {
-    switch(type) {
+    switch (type) {
       case 'good':
-        return { 
-          label: t.status_good || 'Good Posture', 
-          color: 'text-green-600', 
+        return {
+          label: t.status_good || 'Good Posture',
+          color: 'text-green-600',
           bg: 'bg-green-50',
           border: 'border-green-200',
-          icon: CheckCircle 
+          icon: CheckCircle
         }
       case 'slouching':
-        return { 
-          label: t.status_hunch || 'Slouching', 
-          color: 'text-yellow-600', 
+        return {
+          label: t.status_hunch || 'Slouching',
+          color: 'text-yellow-600',
           bg: 'bg-yellow-50',
           border: 'border-yellow-200',
-          icon: AlertCircle 
+          icon: AlertCircle
         }
-      case 'forward_head':
-        return { 
-          label: t.status_lean || 'Forward Head', 
-          color: 'text-orange-600', 
+      case 'lean':
+        return {
+          label: t.status_lean || 'Lean',
+          color: 'text-orange-600',
           bg: 'bg-orange-50',
           border: 'border-orange-200',
-          icon: AlertCircle 
+          icon: AlertCircle
         }
-      case 'leaning':
-        return { 
-          label: t.status_titl || 'Leaning', 
-          color: 'text-red-600', 
+      case 'tilt':
+        return {
+          label: t.status_titl || 'Tilt',
+          color: 'text-red-600',
           bg: 'bg-red-50',
           border: 'border-red-200',
-          icon: AlertCircle 
+          icon: AlertCircle
         }
       default:
-        return { 
-          label: t.status_unknown || 'Unknown', 
-          color: 'text-gray-600', 
+        return {
+          label: t.status_unknown || 'Unknown',
+          color: 'text-gray-600',
           bg: 'bg-gray-50',
           border: 'border-gray-200',
-          icon: AlertCircle 
+          icon: AlertCircle
         }
     }
   }
@@ -117,10 +117,10 @@ export default function HistoryPage() {
   const groupByDate = (records) => {
     const groups = {}
     records.forEach(record => {
-      const date = new Date(record.created_at).toLocaleDateString('en-US', { 
-        month: 'long', 
-        day: 'numeric', 
-        year: 'numeric' 
+      const date = new Date(record.created_at).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
       })
       if (!groups[date]) groups[date] = []
       groups[date].push(record)
@@ -136,6 +136,13 @@ export default function HistoryPage() {
     bad: records.filter(r => r.posture_type !== 'good').length
   }
 
+  const displayFilterName = (f) => {
+    if (f === 'all') return t.all || 'All'
+    if (f === 'good') return t.status_good || 'Good'
+    if (f === 'bad') return t.status_bad || 'Bad'
+    return f
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -149,7 +156,7 @@ export default function HistoryPage() {
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Records</p>
+              <p className="text-sm text-gray-600">{t.total_records}</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
             </div>
             <Calendar className="w-10 h-10 text-blue-500 opacity-20" />
@@ -159,7 +166,7 @@ export default function HistoryPage() {
         <div className="bg-green-50 rounded-xl p-6 border border-green-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-green-600">Good Posture</p>
+              <p className="text-sm text-green-600">{t.good_posture}</p>
               <p className="text-3xl font-bold text-green-600 mt-1">{stats.good}</p>
             </div>
             <CheckCircle className="w-10 h-10 text-green-500 opacity-20" />
@@ -169,7 +176,7 @@ export default function HistoryPage() {
         <div className="bg-red-50 rounded-xl p-6 border border-red-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-red-600">Bad Posture</p>
+              <p className="text-sm text-red-600">{t.status_bad}</p>
               <p className="text-3xl font-bold text-red-600 mt-1">{stats.bad}</p>
             </div>
             <AlertCircle className="w-10 h-10 text-red-500 opacity-20" />
@@ -184,38 +191,35 @@ export default function HistoryPage() {
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <Filter className="w-4 h-4 inline mr-1" />
-              Filter by Type
+              {t.filter_by_type}
             </label>
             <div className="flex gap-2">
               <button
                 onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  filter === 'all' 
-                    ? 'bg-blue-600 text-white' 
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${filter === 'all'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                  }`}
               >
-                All
+                {t.all}
               </button>
               <button
                 onClick={() => setFilter('good')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  filter === 'good' 
-                    ? 'bg-green-600 text-white' 
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${filter === 'good'
+                    ? 'bg-green-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                  }`}
               >
-                Good
+                {t.status_good}
               </button>
               <button
                 onClick={() => setFilter('bad')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  filter === 'bad' 
-                    ? 'bg-red-600 text-white' 
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${filter === 'bad'
+                    ? 'bg-red-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                  }`}
               >
-                Bad
+                {t.status_bad}
               </button>
             </div>
           </div>
@@ -224,7 +228,7 @@ export default function HistoryPage() {
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <Search className="w-4 h-4 inline mr-1" />
-              Search by Date
+              {t.search_by_date}
             </label>
             <input
               type="date"
@@ -238,10 +242,10 @@ export default function HistoryPage() {
         {/* Active Filters */}
         {(filter !== 'all' || searchDate) && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200">
-            <span className="text-sm text-gray-600">Active filters:</span>
+            <span className="text-sm text-gray-600">{t.active_filters}</span>
             {filter !== 'all' && (
               <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                Type: {filter}
+                Type: {displayFilterName(filter)}
               </span>
             )}
             {searchDate && (
@@ -256,7 +260,7 @@ export default function HistoryPage() {
               }}
               className="ml-auto text-sm text-blue-600 hover:text-blue-700 font-medium"
             >
-              Clear all
+              {t.clear_all}
             </button>
           </div>
         )}
@@ -266,7 +270,7 @@ export default function HistoryPage() {
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
-            Timeline ({filteredRecords.length} records)
+            {t.timeline} ({filteredRecords.length} {t.records})
           </h2>
         </div>
 
@@ -274,13 +278,13 @@ export default function HistoryPage() {
           {loading ? (
             <div className="p-12 text-center text-gray-500">
               <Clock className="w-8 h-8 mx-auto mb-2 animate-spin" />
-              <p>Loading history...</p>
+              <p>{t.loading_history || 'Loading history...'}</p>
             </div>
           ) : filteredRecords.length === 0 ? (
             <div className="p-12 text-center text-gray-500">
               <Calendar className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>{t.no_data || 'No records found'}</p>
-              <p className="text-sm mt-1">{t.loading || 'Try adjusting your filters'}</p>
+              <p>{t.no_records_found || 'No records found'}</p>
+              <p className="text-sm mt-1">{t.try_adjust_filters || 'Try adjusting your filters'}</p>
             </div>
           ) : (
             Object.entries(groupedRecords).map(([date, dateRecords]) => (
@@ -289,7 +293,7 @@ export default function HistoryPage() {
                   <Calendar className="w-4 h-4" />
                   {date}
                   <span className="ml-auto text-xs font-normal text-gray-500">
-                    {dateRecords.length} records
+                    {dateRecords.length} {t.records}
                   </span>
                 </h3>
                 <div className="space-y-3">
@@ -306,7 +310,7 @@ export default function HistoryPage() {
                         <div className={`w-10 h-10 rounded-full ${info.bg} border ${info.border} flex items-center justify-center flex-shrink-0`}>
                           <Icon className={`w-5 h-5 ${info.color}`} />
                         </div>
-                        
+
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <p className={`font-semibold ${info.color}`}>
@@ -318,7 +322,7 @@ export default function HistoryPage() {
                             </span>
                           </div>
                           <p className="text-sm text-gray-600 mt-1">
-                            Confidence: {(record.confidence * 100).toFixed(0)}%
+                            {t.confidence}: {(record.confidence * 100).toFixed(0)}%
                           </p>
                         </div>
                       </div>

@@ -33,7 +33,6 @@ export default function Sidebar({ user }) {
       {/* Logo */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-center">
-          {/* Hiển thị logo với text */}
           <Image 
             src={logo} 
             alt="PosturePal Logo" 

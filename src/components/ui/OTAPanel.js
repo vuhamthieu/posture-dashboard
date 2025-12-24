@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function OTAPanel() {
   const [status, setStatus] = useState('checking')
   const [deviceInfo, setDeviceInfo] = useState(null)
   const [loadingAction, setLoadingAction] = useState(null) 
   const [message, setMessage] = useState('')
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkStatus()
@@ -58,15 +60,15 @@ export default function OTAPanel() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            Firmware Management
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            {t.firm_mag}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Remote control via Cloud Broker
+            {t.cloud_broker}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -75,25 +77,27 @@ export default function OTAPanel() {
             status === 'offline' ? 'bg-red-500' : 
             'bg-yellow-500 animate-pulse'
           }`} />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {status === 'online' ? 'Connected DB' : 
-             status === 'offline' ? 'Disconnected' : 
-             'Checking...'}
+          <span className="text-sm font-medium text-gray-700 dark:text-black-300">
+            {status === 'online'
+              ? (t?.connect_db || 'Connected to broker')
+              : status === 'offline'
+              ? (t?.status_disconnect || 'Disconnected')
+              : (t?.status_checking || 'Checking...')}
           </span>
         </div>
       </div>
 
       {/* Device Info*/}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="flex justify-between items-center py-3 px-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-           <span className="text-sm text-gray-600 dark:text-gray-300">Target Device</span>
+        <div className="flex justify-between items-center py-3 px-4 bg-gray-50 dark:bg-gray-200 rounded-lg">
+           <span className="text-sm text-gray-600 dark:text-black-300">{t.target_device}</span>
            <code className="px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded text-sm font-mono">
              {deviceInfo?.device_id || 'pi-posture-001'}
            </code>
         </div>
-        <div className="flex justify-between items-center py-3 px-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-           <span className="text-sm text-gray-600 dark:text-gray-300">Connection Mode</span>
-           <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded text-sm font-medium">
+        <div className="flex justify-between items-center py-3 px-4 bg-gray-50 dark:bg-gray-200 rounded-lg">
+           <span className="text-sm text-gray-600 dark:text-black-300">{t.connect_mode}</span>
+           <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-200 rounded text-sm font-medium">
              Cloud Broker
            </span>
         </div>
@@ -113,12 +117,12 @@ export default function OTAPanel() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              <span>Queuing Update...</span>
+              <span>{t.queuing_update}</span>
             </>
           ) : (
             <>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-              <span>Pull Updates from GitHub</span>
+              <span>{t.pull_update}</span>
             </>
           )}
         </button>
@@ -140,7 +144,7 @@ export default function OTAPanel() {
           ) : (
             <>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-              <span>Restart Bot</span>
+              <span>{t.restart}</span>
             </>
           )}
         </button>
