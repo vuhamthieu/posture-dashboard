@@ -1,28 +1,39 @@
 import 'server-only'
 import admin from 'firebase-admin'
 
-/**
- * Khởi tạo Firebase Admin
- * Tránh init nhiều lần trên Vercel (hot start)
- */
-if (!admin.apps.length) {
+let firebaseAppInitialized = false
+
+function initFirebaseAdmin() {
+  if (firebaseAppInitialized || admin.apps.length > 0) return
+
+  const {
+    FIREBASE_PROJECT_ID,
+    FIREBASE_CLIENT_EMAIL,
+    FIREBASE_PRIVATE_KEY,
+  } = process.env
+
+  if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
+    throw new Error('Missing Firebase Admin environment variables')
+  }
+
   admin.initializeApp({
     credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      // Vercel env thường escape \n
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      projectId: FIREBASE_PROJECT_ID,
+      clientEmail: FIREBASE_CLIENT_EMAIL,
+      privateKey: FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     }),
   })
+
+  firebaseAppInitialized = true
 }
 
 /**
  * Gửi FCM tới nhiều device
- * @param {string[]} tokens
- * @param {{ title: string, body: string }} payload
  */
 export async function sendFCM(tokens, payload) {
   if (!Array.isArray(tokens) || tokens.length === 0) return
+
+  initFirebaseAdmin()
 
   try {
     const response = await admin.messaging().sendEachForMulticast({
@@ -33,7 +44,6 @@ export async function sendFCM(tokens, payload) {
       },
     })
 
-    // Optional: log lỗi token chết
     response.responses.forEach((res, idx) => {
       if (!res.success) {
         console.warn(
