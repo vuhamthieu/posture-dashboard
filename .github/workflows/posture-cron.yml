@@ -1,0 +1,17 @@
+name: Posture Notify Cron
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # mỗi 5 phút
+  workflow_dispatch:       # cho phép bấm Run manually
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call posture cron API
+        run: |
+          curl -X GET \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            https://your-vercel-app.vercel.app/api/cron/posture
