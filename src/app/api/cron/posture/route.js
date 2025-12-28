@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { handlePostureNotify } from '@/services/posture-notifier/handler'
+export const runtime = 'nodejs';
 
 export async function GET() {
   try {
