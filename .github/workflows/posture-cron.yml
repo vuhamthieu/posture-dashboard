@@ -14,4 +14,4 @@ jobs:
         run: |
           curl -X GET \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
-            https://your-vercel-app.vercel.app/api/cron/posture
+            https://posture-dashboard.vercel.app/api/cron/posture
