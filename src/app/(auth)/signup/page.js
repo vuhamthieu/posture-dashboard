@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Camera, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -14,6 +15,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { t } = useLanguage();
 
   const handleSignup = async (e) => {
     e.preventDefault()
@@ -62,13 +64,9 @@ export default function SignupPage() {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Created!</h2>
-          <p className="text-gray-600 mb-4">
-            Please check your email to verify your account.
-          </p>
-          <p className="text-sm text-gray-500">
-            Redirecting to login...
-          </p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.account_created || 'Account Created!'}</h2>
+          <p className="text-gray-600 mb-4">{t.check_email_verify || 'Please check your email to verify your account.'}</p>
+          <p className="text-sm text-gray-500">{t.redirecting_login || 'Redirecting to login...'}</p>
         </div>
       </div>
     )
@@ -82,8 +80,8 @@ export default function SignupPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
             <Camera className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-600 mt-2">Start monitoring your posture today</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t.create_account || 'Create Account'}</h1>
+          <p className="text-gray-600 mt-2">{t.start_monitoring || 'Start monitoring your posture today'}</p>
         </div>
 
         {/* Signup Form */}
@@ -100,7 +98,7 @@ export default function SignupPage() {
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                {t.email_address}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -118,7 +116,7 @@ export default function SignupPage() {
             {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                {t.password}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -136,7 +134,7 @@ export default function SignupPage() {
             {/* Confirm Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
+                {t.password + ' (confirm)'}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -155,10 +153,10 @@ export default function SignupPage() {
             <label className="flex items-start text-sm">
               <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5" required />
               <span className="ml-2 text-gray-600">
-                I agree to the{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700">Terms of Service</a>
+                {t.terms_of_service} {' '}
+                <a href="#" className="text-blue-600 hover:text-blue-700">{t.terms_of_service}</a>
                 {' '}and{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700">Privacy Policy</a>
+                <a href="#" className="text-blue-600 hover:text-blue-700">{t.privacy_policy}</a>
               </span>
             </label>
 
@@ -168,15 +166,15 @@ export default function SignupPage() {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? (t.creating_account || 'Creating account...') : (t.create_account || 'Create Account')}
             </button>
           </form>
 
           {/* Login Link */}
           <p className="text-center text-sm text-gray-600 mt-6">
-            Already have an account?{' '}
+            {t.dont_have_account || 'Already have an account?'}{' '}
             <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-              Sign in
+              {t.sign_in || 'Sign in'}
             </Link>
           </p>
         </div>

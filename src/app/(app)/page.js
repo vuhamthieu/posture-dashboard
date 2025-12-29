@@ -1,9 +1,9 @@
-// src/app/(app)/page.js
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Activity, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [history, setHistory] = useState([])
   const [stats, setStats] = useState({ good: 0, bad: 0, total: 0 })
   const supabase = createClient()
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Get current user
@@ -81,11 +82,11 @@ export default function Dashboard() {
   // Determine posture status
   const getPostureStatus = (type) => {
     switch(type) {
-      case 'good': return { label: 'GOOD POSTURE', color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle }
-      case 'slouching': return { label: 'SLOUCHING', color: 'text-yellow-500', bg: 'bg-yellow-500/10', icon: AlertCircle }
-      case 'forward_head': return { label: 'FORWARD HEAD', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: AlertCircle }
-      case 'leaning': return { label: 'LEANING', color: 'text-red-500', bg: 'bg-red-500/10', icon: AlertCircle }
-      default: return { label: 'UNKNOWN', color: 'text-gray-500', bg: 'bg-gray-500/10', icon: Activity }
+      case 'good': return { label: t.status_good || 'GOOD', color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle }
+      case 'slouching': return { label: t.status_hunch || 'SLOUCHING', color: 'text-yellow-500', bg: 'bg-yellow-500/10', icon: AlertCircle }
+      case 'leaning': return { label: t.status_lean || 'LEANING', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: AlertCircle }
+      case 'titl': return { label: t.status_titl || 'TILT', color: 'text-red-500', bg: 'bg-red-500/10', icon: AlertCircle }
+      default: return { label: t.status_unknown || 'UNKNOWN', color: 'text-gray-500', bg: 'bg-gray-500/10', icon: Activity }
     }
   }
 
@@ -109,8 +110,8 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Posture Monitor Dashboard</h1>
-        <p className="text-gray-600 mt-1">Real-time posture tracking and analytics</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t.dashboard_title}</h1>
+        <p className="text-gray-600 mt-1">{t.realtime_tracking}</p>
       </div>
 
       {/* Stats Cards */}
@@ -118,41 +119,41 @@ export default function Dashboard() {
         {/* Current Status */}
         <div className={`${status.bg} rounded-xl p-6 border border-gray-200`}>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Current Status</span>
+            <span className="text-sm font-medium text-gray-600">{t.current_status}</span>
             <StatusIcon className={`w-5 h-5 ${status.color}`} />
           </div>
           <p className={`text-2xl font-bold ${status.color}`}>{status.label}</p>
-          <p className="text-sm text-gray-600 mt-2">Confidence: {confidence}%</p>
+          <p className="text-sm text-gray-600 mt-2">{t.confidence}: {confidence}%</p>
         </div>
 
         {/* Good Posture */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Good Posture</span>
+            <span className="text-sm font-medium text-gray-600">{t.good_posture}</span>
             <CheckCircle className="w-5 h-5 text-green-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.good}</p>
-          <p className="text-sm text-green-600 mt-2">{goodPercentage}% of total</p>
+          <p className="text-sm text-green-600 mt-2">{goodPercentage}% {t.of_total}</p>
         </div>
 
         {/* Bad Posture */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Alerts</span>
+            <span className="text-sm font-medium text-gray-600">{t.alerts}</span>
             <AlertCircle className="w-5 h-5 text-red-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.bad}</p>
-          <p className="text-sm text-red-600 mt-2">{stats.total - stats.good} warnings</p>
+          <p className="text-sm text-red-600 mt-2">{stats.total - stats.good} {t.warnings}</p>
         </div>
 
         {/* Total Records */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Total Records</span>
+            <span className="text-sm font-medium text-gray-600">{t.total_records}</span>
             <TrendingUp className="w-5 h-5 text-blue-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-          <p className="text-sm text-gray-600 mt-2">All time</p>
+          <p className="text-sm text-gray-600 mt-2">{t.all_time}</p>
         </div>
       </div>
 
@@ -160,64 +161,64 @@ export default function Dashboard() {
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Posture Timeline</h3>
-            <p className="text-sm text-gray-600">Last 100 detections</p>
+            <h3 className="text-lg font-semibold text-gray-900">{t.posture_timeline}</h3>
+            <p className="text-sm text-gray-600">{t.last_100}</p>
           </div>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-gray-600">Good</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span className="text-gray-600">Bad</span>
-            </div>
-          </div>
-        </div>
+              <span className="text-gray-600">{t.status_good}</span>
+             </div>
+             <div className="flex items-center gap-2">
+               <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <span className="text-gray-600">{t.status_bad}</span>
+             </div>
+           </div>
+         </div>
 
-        {history.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis 
-                dataKey="time" 
-                stroke="#6b7280"
-                style={{ fontSize: '12px' }}
-              />
-              <YAxis 
-                domain={[0, 100]}
-                stroke="#6b7280"
-                style={{ fontSize: '12px' }}
-                ticks={[0, 50, 100]}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#fff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '12px'
-                }}
-                formatter={(value, name, props) => [props.payload.type, 'Status']}
-              />
-              <Line 
-                type="stepAfter" 
-                dataKey="score" 
-                stroke="#10b981" 
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        ) : (
-          <div className="h-[300px] flex items-center justify-center text-gray-500">
-            <div className="text-center">
-              <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>No posture data yet</p>
-              <p className="text-sm">Connect your Raspberry Pi to start monitoring</p>
-            </div>
-          </div>
-        )}
-      </div>
+         {history.length > 0 ? (
+           <ResponsiveContainer width="100%" height={300}>
+             <LineChart data={chartData}>
+               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+               <XAxis 
+                 dataKey="time" 
+                 stroke="#6b7280"
+                 style={{ fontSize: '12px' }}
+               />
+               <YAxis 
+                 domain={[0, 100]}
+                 stroke="#6b7280"
+                 style={{ fontSize: '12px' }}
+                 ticks={[0, 50, 100]}
+               />
+               <Tooltip 
+                 contentStyle={{ 
+                   backgroundColor: '#fff',
+                   border: '1px solid #e5e7eb',
+                   borderRadius: '8px',
+                   fontSize: '12px'
+                 }}
+                 formatter={(value, name, props) => [props.payload.type, 'Status']}
+               />
+               <Line 
+                 type="stepAfter" 
+                 dataKey="score" 
+                 stroke="#10b981" 
+                 strokeWidth={2}
+                 dot={false}
+               />
+             </LineChart>
+           </ResponsiveContainer>
+         ) : (
+           <div className="h-[300px] flex items-center justify-center text-gray-500">
+             <div className="text-center">
+               <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <p>{t.no_data}</p>
+              <p className="text-sm">{t.connect_pi}</p>
+             </div>
+           </div>
+         )}
+       </div>
 
       {/* Quick Actions */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">

@@ -1,6 +1,9 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
+import logo from '@/assets/logowithtext.png'
 import { usePathname } from 'next/navigation'
+import { useLanguage } from "@/context/LanguageContext";
 import { 
   Home, 
   History, 
@@ -11,28 +14,32 @@ import {
   Pi
 } from 'lucide-react'
 
-const navItems = [
-  { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/history', label: 'History', icon: History },
-  { href: '/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/settings', label: 'Settings', icon: Settings },
-  { href: '/update', label: 'Update', icon: Download },
-]
+
 
 export default function Sidebar({ user }) {
   const pathname = usePathname()
+  const { t } = useLanguage();
+
+  const navItems = [
+    { href: "/", label: t.dashboard, icon: Home}, 
+    { href: "/history", label: t.history, icon: History },   
+    { href: "/analytics", label: t.analytics, icon: BarChart3 },
+    { href: "/settings", label: t.settings, icon: Settings },
+    { href: "/update", label: t.update, icon: Download },
+  ]
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Pi className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="font-bold text-lg text-black">PosturePal</h1>
-          </div>
+        <div className="flex items-center justify-center">
+          <Image 
+            src={logo} 
+            alt="PosturePal Logo" 
+            width={150} 
+            height={40}
+            className="rounded-lg"
+          />
         </div>
       </div>
 
@@ -54,7 +61,6 @@ export default function Sidebar({ user }) {
                 }
               `}
             >
-              <icon className="w-5 h-5" />
               <span>{item.label}</span>
             </Link>
           )

@@ -2,8 +2,9 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Save, AlertCircle, CheckCircle, User, Trash2, Monitor, Smile, Volume2, Lightbulb } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext';
 
-const DEVICE_ID = 'pi-posture-001'
+const DEVICE_ID = "pi-posture-001";
 
 export default function SettingsPage() {
   const [user, setUser] = useState(null)
@@ -20,6 +21,7 @@ export default function SettingsPage() {
   })
 
   const supabase = createClient()
+  const { t } = useLanguage();
 
   useEffect(() => {
     loadData()
@@ -39,7 +41,6 @@ export default function SettingsPage() {
     const { data } = await supabase
       .from('device_configs')
       .select('settings')
-      .eq('device_id', DEVICE_ID)
       .single()
 
     if (data?.settings) {
@@ -101,8 +102,8 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl mx-auto w-full space-y-8 pb-10">
       <div className="text-center md:text-left">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-1">Device Configuration & Account</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t.settings}</h1>
+        <p className="text-gray-600 mt-1">{t.nav_desc || 'Device Configuration & Account'}</p>
       </div>
 
       {message.text && (
@@ -120,7 +121,7 @@ export default function SettingsPage() {
         <div className="p-6 border-b border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-2 text-blue-700">
             <Monitor className="w-5 h-5" />
-            <h2 className="text-lg font-bold">Posture Bot Configuration</h2>
+            <h2 className="text-lg font-bold">{t.update || 'Posture Bot Configuration'}</h2>
           </div>
         </div>
         
@@ -128,41 +129,41 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <Smile className="w-4 h-4"/> OLED Face Style
+                <Smile className="w-4 h-4"/> {t.oled_style}
               </label>
               <select 
                 value={config.oled_icon_style}
                 onChange={(e) => setConfig({...config, oled_icon_style: e.target.value})}
                 className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 "
               >
-                <option value="A">Style A: Human</option>
-                <option value="B">Style B: Cute Cat</option>
-                <option value="C">Style C: Minimalist</option>
+                <option value="A">{t.style_a}</option>
+                <option value="B">{t.style_b}</option>
+                <option value="C">{t.style_c}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <Volume2 className="w-4 h-4"/> Voice Language
+                <Volume2 className="w-4 h-4"/> {t.voice}
               </label>
               <select 
                 value={config.alert_language}
                 onChange={(e) => setConfig({...config, alert_language: e.target.value})}
                 className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 "
               >
-                <option value="vi">Vietnamese</option>
-                <option value="en">English</option>
+                <option value="vi">{t.vietnam}</option>
+                <option value="en">{t.english}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-              <Lightbulb className="w-4 h-4"/> LED Colors
+              <Lightbulb className="w-4 h-4"/> {t.led_color}
             </label>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 border rounded-lg bg-gray-50">
-                <span className="text-xs text-gray-500 block mb-2">Good Posture</span>
+                <span className="text-xs text-gray-500 block mb-2">{t.good_posture}</span>
                 <div className="flex items-center gap-3">
                   <input 
                     type="color" 
@@ -174,7 +175,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="p-3 border rounded-lg bg-gray-50">
-                <span className="text-xs text-gray-500 block mb-2">Bad Posture</span>
+                <span className="text-xs text-gray-500 block mb-2">{t.bad_posture}</span>
                 <div className="flex items-center gap-3">
                   <input 
                     type="color" 
@@ -194,7 +195,7 @@ export default function SettingsPage() {
             onClick={loadData}
             className="px-4 py-2 text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition"
           >
-            Cancel
+            {t.cancel || 'Cancel'}
           </button>
           <button
             onClick={handleSave}
@@ -206,7 +207,7 @@ export default function SettingsPage() {
             ) : (
               <Save className="w-4 h-4" />
             )}
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? (t.loading || 'Saving...') : (t.update || 'Save')}
           </button>
         </div>
       </div>
@@ -214,7 +215,7 @@ export default function SettingsPage() {
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex items-center gap-3 mb-4 text-gray-700">
           <User className="w-5 h-5" />
-          <h2 className="text-lg font-semibold">Account</h2>
+          <h2 className="text-lg font-semibold">{t.settings || 'Account'}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-3 bg-gray-50 rounded-lg">
@@ -230,28 +231,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="bg-red-50 rounded-xl p-6 border border-red-200">
-        <div className="flex items-center gap-3 mb-4 text-red-700">
-          <AlertCircle className="w-5 h-5" />
-          <h2 className="text-lg font-semibold">Danger Zone</h2>
-        </div>
-        <p className="text-sm text-red-600 mb-4">
-          Permanently delete all posture history data. This cannot be undone.
-        </p>
-        <button
-          onClick={async () => {
-            if (confirm('⚠️ Are you sure you want to delete all history?')) {
-              await supabase.from('posture_records').delete().eq('user_id', user.id)
-              setMessage({ type: 'success', text: 'History deleted.' })
-              setTimeout(() => window.location.reload(), 1500)
-            }
-          }}
-          className="w-full sm:w-auto px-4 py-2 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-100 transition flex items-center justify-center gap-2"
-        >
-          <Trash2 className="w-4 h-4" />
-          Clear History
-        </button>
-      </div>
     </div>
   )
 }
