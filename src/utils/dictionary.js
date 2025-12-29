@@ -88,9 +88,14 @@ export const dictionary = {
     status_disconnect: "Không kết nối",
     queuing_update: "Đang cập nhật...",
     queuing_restart: "Đang khởi động lại...",
+    refresh: "Làm mới",
+    loading_analytics: "Đang tải dữ liệu phân tích...",
+
+    last_update: "Cập nhật lần cuối",
 
     // Loading
     loading: "Đang tải dữ liệu...",
+    loaded: "Đã tải",
 
     // Auth / Login / Signup
     sign_in_title: "Đăng nhập",
@@ -203,9 +208,14 @@ export const dictionary = {
     status_disconnect: "Disconnected",
     queuing_update: "Queuing Update...",
     queuing_restart: "Queing Restart",
+    refresh: "Refresh",
+    loading_analytics: "Loading analytics data...",
+
+    last_update: "Last updated",
 
     // Loading
     loading: "Loading data...",
+    loaded: "Loaded",
 
     // Auth / Login / Signup
     sign_in_title: "Sign In",

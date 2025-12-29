@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Save, AlertCircle, CheckCircle, User, Trash2, Monitor, Smile, Volume2, Lightbulb } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext';
 
+const DEVICE_ID = "pi-posture-001";
+
 export default function SettingsPage() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -229,28 +231,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="bg-red-50 rounded-xl p-6 border border-red-200">
-        <div className="flex items-center gap-3 mb-4 text-red-700">
-          <AlertCircle className="w-5 h-5" />
-          <h2 className="text-lg font-semibold">{t.alerts || 'Danger Zone'}</h2>
-        </div>
-        <p className="text-sm text-red-600 mb-4">
-          {t.no_data || 'Permanently delete all posture history data. This cannot be undone.'}
-        </p>
-        <button
-          onClick={async () => {
-            if (confirm('⚠️ Are you sure you want to delete all history?')) {
-              await supabase.from('posture_records').delete().eq('user_id', user.id)
-              setMessage({ type: 'success', text: t.update || 'History deleted.' })
-              setTimeout(() => window.location.reload(), 1500)
-            }
-          }}
-          className="w-full sm:w-auto px-4 py-2 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-100 transition flex items-center justify-center gap-2"
-        >
-          <Trash2 className="w-4 h-4" />
-          {t.update || 'Clear History'}
-        </button>
-      </div>
     </div>
   )
 }

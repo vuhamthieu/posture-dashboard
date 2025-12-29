@@ -4,7 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 
 export default function UpdatePage() {
   const { t } = useLanguage();
-  
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-8">

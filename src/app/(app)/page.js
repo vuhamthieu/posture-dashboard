@@ -84,8 +84,8 @@ export default function Dashboard() {
     switch(type) {
       case 'good': return { label: t.status_good || 'GOOD', color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle }
       case 'slouching': return { label: t.status_hunch || 'SLOUCHING', color: 'text-yellow-500', bg: 'bg-yellow-500/10', icon: AlertCircle }
-      case 'forward_head': return { label: t.status_lean || 'FORWARD HEAD', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: AlertCircle }
-      case 'leaning': return { label: t.status_titl || 'LEANING', color: 'text-red-500', bg: 'bg-red-500/10', icon: AlertCircle }
+      case 'leaning': return { label: t.status_lean || 'LEANING', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: AlertCircle }
+      case 'titl': return { label: t.status_titl || 'TILT', color: 'text-red-500', bg: 'bg-red-500/10', icon: AlertCircle }
       default: return { label: t.status_unknown || 'UNKNOWN', color: 'text-gray-500', bg: 'bg-gray-500/10', icon: Activity }
     }
   }

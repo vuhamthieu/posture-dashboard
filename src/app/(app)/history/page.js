@@ -62,47 +62,54 @@ export default function HistoryPage() {
   }
 
   const getPostureInfo = (type) => {
-    switch (type) {
-      case 'good':
-        return {
-          label: t.status_good || 'Good Posture',
-          color: 'text-green-600',
-          bg: 'bg-green-50',
-          border: 'border-green-200',
-          icon: CheckCircle
-        }
-      case 'slouching':
-        return {
-          label: t.status_hunch || 'Slouching',
-          color: 'text-yellow-600',
-          bg: 'bg-yellow-50',
-          border: 'border-yellow-200',
-          icon: AlertCircle
-        }
-      case 'lean':
-        return {
-          label: t.status_lean || 'Lean',
-          color: 'text-orange-600',
-          bg: 'bg-orange-50',
-          border: 'border-orange-200',
-          icon: AlertCircle
-        }
-      case 'tilt':
-        return {
-          label: t.status_titl || 'Tilt',
-          color: 'text-red-600',
-          bg: 'bg-red-50',
-          border: 'border-red-200',
-          icon: AlertCircle
-        }
-      default:
-        return {
-          label: t.status_unknown || 'Unknown',
-          color: 'text-gray-600',
-          bg: 'bg-gray-50',
-          border: 'border-gray-200',
-          icon: AlertCircle
-        }
+
+    const cleanType = type ? type.toString().toLowerCase().trim() : 'unknown';
+    if (cleanType === 'good') {
+      return {
+        label: t.status_good || 'Good Posture',
+        color: 'text-green-600',
+        bg: 'bg-green-50',
+        border: 'border-green-200',
+        icon: CheckCircle
+      }
+    }
+
+    if (cleanType.includes('lean') || cleanType.includes('forward')) {
+      return {
+        label: t.status_lean || 'Nghiêng Người (Leaning)',
+        color: 'text-orange-600',
+        bg: 'bg-orange-50',
+        border: 'border-orange-200',
+        icon: AlertCircle
+      }
+    }
+
+    if (cleanType.includes('tilt')) {
+      return {
+        label: t.status_titl || 'Nghiêng Đầu (Tilt)',
+        color: 'text-red-600',
+        bg: 'bg-red-50',
+        border: 'border-red-200',
+        icon: AlertCircle
+      }
+    }
+
+    if (cleanType.includes('slouch') || cleanType.includes('hunch')) {
+      return {
+        label: t.status_hunch || 'Gù Lưng (Slouching)',
+        color: 'text-yellow-600',
+        bg: 'bg-yellow-50',
+        border: 'border-yellow-200',
+        icon: AlertCircle
+      }
+    }
+
+    return {
+      label: `${t.status_unknown || 'Unknown'} (${cleanType})`, 
+      color: 'text-gray-600',
+      bg: 'bg-gray-50',
+      border: 'border-gray-200',
+      icon: AlertCircle
     }
   }
 
