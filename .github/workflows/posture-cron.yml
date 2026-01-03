@@ -1,8 +1,6 @@
 name: Posture Notify Cron
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"   # mỗi 5 phút
   workflow_dispatch:       # cho phép bấm Run manually
 
 jobs:
