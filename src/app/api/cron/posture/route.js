@@ -18,10 +18,17 @@ export async function GET(req) {
     await handlePostureNotify()
     return NextResponse.json({ status: 'ok' })
   } catch (err) {
-    console.error('Posture cron error:', err)
-    return NextResponse.json(
-      { status: 'error' },
-      { status: 500 }
-    )
-  }
+  console.error('Posture cron error:')
+  console.error(err?.message)
+  console.error(err?.stack)
+
+  return NextResponse.json(
+    {
+      status: 'error',
+      message: err?.message || 'Unknown error',
+    },
+    { status: 500 }
+  )
+}
+
 }
