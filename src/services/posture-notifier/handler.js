@@ -7,7 +7,7 @@ import { buildPostureMessage } from './messageBuilder'
 /**
  * Thời gian cửa sổ kiểm tra (5 phút)
  */
-const WINDOW_MINUTES = 5
+const WINDOW_MINUTES = 30
 
 /**
  * Cooldown gửi notification cho mỗi user (phút)
