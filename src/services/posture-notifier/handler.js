@@ -62,14 +62,23 @@ export async function handlePostureNotify() {
 
     if (recentNoti?.length) continue
 
-    const { data: tokensData } = await supabase
-      .from('user_fcm_tokens')
-      .select('fcm_token')
-      .eq('user_id', userId)
-      .eq('is_active', true)
+    const { data: tokensData, error: tokenError } = await supabase
+  .from('user_fcm_tokens')
+  .select('fcm_token')
+  .eq('user_id', userId)
+  .eq('is_active', true)
 
-    const tokens = (tokensData || []).map(t => t.fcm_token)
-    if (!tokens.length) continue
+console.log('[CRON] user:', userId)
+console.log('[CRON] tokenError:', tokenError)
+console.log('[CRON] tokens:', tokensData)
+
+const tokens = (tokensData || []).map(t => t.fcm_token)
+
+if (!tokens.length) {
+  console.log('[CRON] no active tokens, skip')
+  continue
+}
+
 
     const message = buildPostureMessage(result.meta)
 
