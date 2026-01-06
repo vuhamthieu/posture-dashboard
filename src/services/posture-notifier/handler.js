@@ -7,7 +7,7 @@ import { buildPostureMessage } from './messageBuilder'
 /**
  * Thời gian cửa sổ kiểm tra (5 phút)
  */
-const WINDOW_MINUTES = 60
+const WINDOW_MINUTES = 5
 
 /**
  * Cooldown gửi notification cho mỗi user (phút)
@@ -67,10 +67,6 @@ export async function handlePostureNotify() {
   .select('fcm_token')
   .eq('user_id', userId)
   .eq('is_active', true)
-
-console.log('[CRON] user:', userId)
-console.log('[CRON] tokenError:', tokenError)
-console.log('[CRON] tokens:', tokensData)
 
 const tokens = (tokensData || []).map(t => t.fcm_token)
 
