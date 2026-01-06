@@ -29,35 +29,28 @@ export function detectBadPosture(records) {
     return { isBad: false }
   }
 
-  // ==== 1. Đánh giá theo posture_type ====
-  const badByLabel = valid.filter(r => r.posture_type === 'bad')
-  const badRatio = badByLabel.length / valid.length
+  const badByLabel = valid.filter(
+  r => r.posture_type && r.posture_type !== 'good'
+)
 
-  // ==== 2. Đánh giá theo neck_angle ====
-  const badByAngle = valid.filter(r => {
-    const angle = r.metrics?.neck_angle
-    return typeof angle === 'number' && angle >= 18
-  })
+const badRatio = badByLabel.length / valid.length
 
-  const angleRatio = badByAngle.length / valid.length
+let maxContinuousBad = 0
+let current = 0
 
-  // ==== 3. Kiểm tra chuỗi xấu liên tục (label OR angle) ====
-  let maxContinuousBad = 0
-  let currentStreak = 0
+for (const r of valid) {
+  const angle = r.metrics?.neck_angle ?? 0
+  const isBad =
+    r.posture_type !== 'good' || angle >= 15
 
-  for (const r of valid) {
-    const angle = r.metrics?.neck_angle ?? 0
-    const isBad =
-      r.posture_type === 'bad' ||
-      angle >= 18
-
-    if (isBad) {
-      currentStreak++
-      maxContinuousBad = Math.max(maxContinuousBad, currentStreak)
-    } else {
-      currentStreak = 0
-    }
+  if (isBad) {
+    current++
+    maxContinuousBad = Math.max(maxContinuousBad, current)
+  } else {
+    current = 0
   }
+}
+
 
   // ==== 4. Ước lượng thời gian tư thế xấu ====
   // Giả định mỗi record ~5s
