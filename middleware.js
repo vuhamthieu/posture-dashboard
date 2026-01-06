@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server'
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl
-
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -59,12 +58,12 @@ export async function middleware(request) {
   const { data: { session } } = await supabase.auth.getSession()
 
   const authRoutes = ['/login', '/signup']
-  const protectedRoutes = ['/', '/devices', '/history', '/settings', '/analytics']
+  const protectedRoutes = ['/', '/devices', '/history', '/settings', '/analytics', '/update'] 
   const publicRoutes = ['/about', '/contact'] 
+
   const isProtectedRoute = protectedRoutes.some(route => 
     pathname === route || pathname.startsWith(`${route}/`)
   )
-  
   if (isProtectedRoute && !session) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('redirectTo', pathname) 
@@ -72,14 +71,8 @@ export async function middleware(request) {
   }
 
   const isAuthRoute = authRoutes.some(route => pathname === route)
-  
   if (isAuthRoute && session) {
     return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  const isPublicRoute = publicRoutes.some(route => pathname === route)
-  if (isPublicRoute) {
-    return response
   }
 
   return response
@@ -87,13 +80,6 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths EXCEPT:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder files (*.png, *.jpg, *.svg, etc.)
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

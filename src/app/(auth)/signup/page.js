@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import logo from '@/assets/logowithtext.png'
+import Image from 'next/image'
 import { Camera, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -77,8 +79,15 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
-            <Camera className="w-8 h-8 text-white" />
+          <div className="flex justify-center mb-4">
+            <Image
+              src={logo}
+              alt="PosturePal Logo"
+              width={300}
+              height={80}
+              priority
+              className="rounded-lg"
+            />
           </div>
           <h1 className="text-3xl font-bold text-gray-900">{t.create_account || 'Create Account'}</h1>
           <p className="text-gray-600 mt-2">{t.start_monitoring || 'Start monitoring your posture today'}</p>

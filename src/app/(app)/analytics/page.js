@@ -83,14 +83,12 @@ export default function AnalyticsPage() {
 
                 console.log(`[Analytics] Loaded page ${page + 1}: ${data.length} records (Total so far: ${allData.length}/${totalInDB}) - ${progress}%`)
 
-                // Stop if we got less than PAGE_SIZE (last page)
                 if (data.length < PAGE_SIZE) {
                     break
                 }
 
                 page++
-
-                // Safety: stop after 20 pages (20k records)
+                
                 if (page >= 20) {
                     console.warn('[Analytics] Stopped at 20k records for performance')
                     break

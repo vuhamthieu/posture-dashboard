@@ -75,6 +75,15 @@ export const dictionary = {
 
     restart: "Khởi động lại",
     pull_update: "Cập nhật Bot",
+    connect: "Kết nối",
+    connect_device: "Kết nối thiết bị",
+    setting_desc: "Quản lý thiết bị và tài khoản",
+    disconnect: "Ngắt kết nối",
+    disconnecting: "Đang ngắt kết nối...",
+    disconect_device: "Thiết bị đã ngắt kết nối",
+    enter_device: "Nhập thiết bị (VD: posture-023)",
+    bot_config: "Tùy chỉnh thiết bị",
+    update: "Cập nhật",
 
     //Status
     status_good: "Tốt",
@@ -195,6 +204,14 @@ export const dictionary = {
 
     restart: "Restart",
     pull_update: "Pull Updates",
+    connect: "Connect",
+    connect_device: "Connect Device",
+    setting_desc: "Device Management & Account",
+    disconnect: "Disconnect",
+    disconnecting: "Disconnecing",
+    disconect_device: "Device disconnected",
+    enter_device: "Enter Device ID (e.g., posture-023)",
+    bot_config: "Bot Configuration",
 
     // Statuses
     status_good: "Good",
